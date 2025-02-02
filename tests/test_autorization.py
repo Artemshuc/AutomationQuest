@@ -89,6 +89,24 @@ def test_price_filter_low_to_high(logged_in_driver):
 
     assert price_list == sorted(price_list), "Товары не отсортированы по возрастанию цены"
 
+def test_price_filter_high_to_low(logged_in_driver):
+    filter_high = WebDriverWait(logged_in_driver,10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "product_sort_container"))
+    )
+    Select(filter_high).select_by_visible_text("Price (high to low)")
+
+
+    prices = WebDriverWait(logged_in_driver,10).until(
+        EC.presence_of_all_elements_located ((By.CLASS_NAME, "inventory_item_price"))
+    )
+    price_list = []
+
+    for price in prices:
+        price_text = price.text.replace('$', '')
+        price_list.append(float(price_text))
+
+    assert price_list == sorted(price_list, reverse=True)
+    
 def test_failed_login(failed_login_driver):
     error_message = WebDriverWait(failed_login_driver, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, 'h3[data-test="error"]'))
